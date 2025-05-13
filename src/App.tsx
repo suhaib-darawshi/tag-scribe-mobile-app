@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { NfcProvider } from "@/contexts/NfcContext";
 import HomePage from "./pages/HomePage";
 import ReadNfc from "./pages/ReadNfc";
 import WriteIdPage from "./pages/WriteIdPage";
@@ -19,17 +20,19 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/read" element={<ReadNfc />} />
-          <Route path="/write" element={<WriteIdPage />} />
-          <Route path="/view/:id" element={<ViewDetails />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <NfcProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/read" element={<ReadNfc />} />
+            <Route path="/write" element={<WriteIdPage />} />
+            <Route path="/view/:id" element={<ViewDetails />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </NfcProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
