@@ -17,7 +17,7 @@ const ReadNfc: React.FC = () => {
 
   return (
     <NfcProvider>
-      <AppLayout title="Read NFC Tag" showBack>
+      <AppLayout title="Scan NFC">
         <div className="py-6">
           {!scannedData ? (
             <NfcScanner onScanComplete={handleScanComplete} scanMode="read" />

@@ -4,17 +4,20 @@ import { useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import BottomNavigation from './BottomNavigation';
 
 interface AppLayoutProps {
   children: ReactNode;
   title?: string;
   showBack?: boolean;
+  hideNav?: boolean;
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({ 
   children, 
   title = 'NFC Reader/Writer',
-  showBack = false
+  showBack = false,
+  hideNav = false
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,11 +44,14 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       </header>
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto pb-safe">
+      <main className="flex-1 overflow-y-auto pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           {children}
         </div>
       </main>
+
+      {/* Bottom Navigation */}
+      {!hideNav && <BottomNavigation />}
     </div>
   );
 };
