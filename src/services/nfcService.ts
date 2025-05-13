@@ -1,14 +1,19 @@
 
-import { Plugins } from '@capacitor/core';
 import { toast } from 'sonner';
 
-// Initialize NFC plugin
+// Mock NFC capabilities for web preview
+// In a real app with Capacitor, we'd use the actual Capacitor plugins
+
+// Get NFC plugin (mock version for web preview)
 const getNfcPlugin = async () => {
-  const { CapacitorNFC } = Plugins;
-  if (!CapacitorNFC) {
-    throw new Error('NFC plugin not available');
-  }
-  return CapacitorNFC;
+  // In a real app, this would use Capacitor's plugin system
+  // const { CapacitorNFC } = Plugins;
+  return {
+    isEnabled: async () => ({ isEnabled: true }),
+    startScanSession: async () => console.log('NFC scan session started (mock)'),
+    stopScanSession: async () => console.log('NFC scan session stopped (mock)'),
+    write: async (data: any) => console.log('Write to NFC tag (mock):', data)
+  };
 };
 
 // Check if NFC is available
@@ -55,6 +60,22 @@ export const registerNfcListeners = (
   onNfcDetected: (tagData: any) => void,
   onError: (error: any) => void
 ) => {
+  // In web preview, simulate NFC tag detection with a button click
+  document.addEventListener('simulateNfcScan', (event: any) => {
+    console.log('Simulated NFC tag detected');
+    onNfcDetected({
+      message: {
+        records: [
+          {
+            type: 'text/plain',
+            payload: JSON.stringify({ name: "Sample Tag", id: "123456", info: "This is a simulated NFC tag" })
+          }
+        ]
+      }
+    });
+  });
+
+  // Real NFC event listeners would be set up here in a real app
   document.addEventListener('nfcTagDetected', (event: any) => {
     console.log('NFC tag detected:', event.detail);
     onNfcDetected(event.detail);
