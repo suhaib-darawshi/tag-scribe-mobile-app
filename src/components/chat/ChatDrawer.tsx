@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Drawer,
   DrawerContent,
@@ -38,6 +38,17 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
     },
   ]);
   const [inputMessage, setInputMessage] = useState('');
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when new messages are added
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (scrollContainer) {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      }
+    }
+  }, [messages]);
 
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
@@ -118,8 +129,8 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
-      <DrawerContent className="h-[80vh]">
-        <DrawerHeader className="border-b">
+      <DrawerContent className="h-[80vh] flex flex-col">
+        <DrawerHeader className="border-b flex-shrink-0">
           <div className="flex items-center justify-between">
             <DrawerTitle>Supervisor Chat</DrawerTitle>
             <DrawerClose asChild>
@@ -130,20 +141,22 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
           </div>
         </DrawerHeader>
         
-        <div className="flex-1 flex flex-col">
-          <ScrollArea className="flex-1 p-4">
-            {messages.map((message) => (
-              <ChatMessage
-                key={message.id}
-                message={message.text}
-                isUser={message.isUser}
-                timestamp={message.timestamp}
-                scanData={message.scanData}
-              />
-            ))}
+        <div className="flex-1 flex flex-col min-h-0">
+          <ScrollArea ref={scrollAreaRef} className="flex-1 px-4">
+            <div className="py-4">
+              {messages.map((message) => (
+                <ChatMessage
+                  key={message.id}
+                  message={message.text}
+                  isUser={message.isUser}
+                  timestamp={message.timestamp}
+                  scanData={message.scanData}
+                />
+              ))}
+            </div>
           </ScrollArea>
           
-          <div className="border-t p-4 space-y-3">
+          <div className="border-t p-4 space-y-3 flex-shrink-0">
             <div className="flex gap-2">
               <Button 
                 variant="outline" 
