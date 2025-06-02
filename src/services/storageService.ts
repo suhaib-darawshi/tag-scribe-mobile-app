@@ -10,9 +10,66 @@ export interface NfcScanRecord {
   type: 'read' | 'write';
 }
 
+// Initialize with sample data if no history exists
+const initializeSampleData = (): void => {
+  const existing = localStorage.getItem(SCAN_HISTORY_KEY);
+  if (!existing) {
+    const sampleData: NfcScanRecord[] = [
+      {
+        id: 'sample1',
+        timestamp: Date.now() - 300000, // 5 minutes ago
+        data: {
+          id: 'EMP001',
+          name: 'John Smith',
+          department: 'Engineering',
+          accessLevel: 'Level 3'
+        },
+        type: 'read'
+      },
+      {
+        id: 'sample2',
+        timestamp: Date.now() - 600000, // 10 minutes ago
+        data: {
+          id: 'EMP002',
+          name: 'Sarah Johnson',
+          department: 'Marketing',
+          accessLevel: 'Level 2'
+        },
+        type: 'read'
+      },
+      {
+        id: 'sample3',
+        timestamp: Date.now() - 900000, // 15 minutes ago
+        data: {
+          id: 'ASSET001',
+          type: 'Equipment',
+          location: 'Building A - Floor 2',
+          status: 'Active'
+        },
+        type: 'write'
+      },
+      {
+        id: 'sample4',
+        timestamp: Date.now() - 1200000, // 20 minutes ago
+        data: {
+          url: 'https://company.com/product/123',
+          productId: 'PROD123',
+          category: 'Electronics'
+        },
+        type: 'read'
+      }
+    ];
+    
+    localStorage.setItem(SCAN_HISTORY_KEY, JSON.stringify(sampleData));
+  }
+};
+
 // Get scan history
 export const getScanHistory = (): NfcScanRecord[] => {
   try {
+    // Initialize sample data if needed
+    initializeSampleData();
+    
     const history = localStorage.getItem(SCAN_HISTORY_KEY);
     return history ? JSON.parse(history) : [];
   } catch (error) {
