@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import BottomNavigation from './BottomNavigation';
+import FloatingChatButton from '../chat/FloatingChatButton';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -49,6 +50,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({
           {children}
         </div>
       </main>
+
+      {/* Floating Chat Button */}
+      <FloatingChatButton />
 
       {/* Bottom Navigation */}
       {!hideNav && <BottomNavigation />}
