@@ -12,7 +12,22 @@ const ViewDetails: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   
-  // Try to get record from location state first, then from storage
+  // Default sample data for testing
+  const defaultRecord: NfcScanRecord = {
+    id: 'default-sample',
+    timestamp: Date.now() - 120000, // 2 minutes ago
+    data: {
+      employeeId: 'EMP123',
+      name: 'Jane Doe',
+      department: 'Operations',
+      accessLevel: 'Level 2',
+      cardType: 'Employee Badge',
+      location: 'Main Building - Floor 3'
+    },
+    type: 'read'
+  };
+  
+  // Try to get record from location state first, then from storage, finally use default
   const [record, setRecord] = React.useState<NfcScanRecord | null>(
     location.state?.record || null
   );
@@ -24,29 +39,17 @@ const ViewDetails: React.FC = () => {
       const foundRecord = history.find(item => item.id === id);
       if (foundRecord) {
         setRecord(foundRecord);
+      } else {
+        // Use default data if no record found
+        setRecord(defaultRecord);
       }
+    } else if (!record) {
+      // Use default data if no record at all
+      setRecord(defaultRecord);
     }
   }, [id, record]);
 
-  if (!record) {
-    return (
-      <AppLayout title="Record Not Found" showBack>
-        <div className="py-12 text-center">
-          <Tag className="mx-auto h-16 w-16 text-gray-300" />
-          <h2 className="mt-4 text-xl font-medium text-gray-700">Record Not Found</h2>
-          <p className="mt-2 text-gray-500">
-            The NFC record you're looking for could not be found.
-          </p>
-          <Button 
-            className="mt-6" 
-            onClick={() => navigate('/')}
-          >
-            Return Home
-          </Button>
-        </div>
-      </AppLayout>
-    );
-  }
+  const displayRecord = record || defaultRecord;
 
   return (
     <AppLayout title="Tag Details" showBack>
@@ -55,17 +58,20 @@ const ViewDetails: React.FC = () => {
           <div>
             <h1 className="text-xl font-medium flex items-center">
               <FileText className="mr-2 h-5 w-5 text-blue-500" />
-              {record.type === 'read' ? 'Scanned' : 'Written'} Tag Details
+              {displayRecord.type === 'read' ? 'Scanned' : 'Written'} Tag Details
+              {!record && (
+                <span className="ml-2 text-sm text-gray-500 font-normal">(Sample Data)</span>
+              )}
             </h1>
             <p className="text-sm text-gray-500 mt-1">
-              {new Date(record.timestamp).toLocaleString()}
+              {new Date(displayRecord.timestamp).toLocaleString()}
             </p>
           </div>
           
-          {record.type === 'write' && (
+          {displayRecord.type === 'write' && (
             <Button 
               onClick={() => navigate('/write', { 
-                state: { initialData: record.data } 
+                state: { initialData: displayRecord.data } 
               })}
             >
               Write Again
@@ -74,9 +80,9 @@ const ViewDetails: React.FC = () => {
         </div>
         
         <NfcDataDisplay 
-          data={record.data} 
-          timestamp={record.timestamp} 
-          type={record.type} 
+          data={displayRecord.data} 
+          timestamp={displayRecord.timestamp} 
+          type={displayRecord.type} 
         />
       </div>
     </AppLayout>
